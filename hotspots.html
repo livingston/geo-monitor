@@ -15,11 +15,104 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <link rel='stylesheet' href='styles.css' />
+    <style>
+      #mapCanvas { height:100%; width:100% }
+    </style>
 
     <script>document.documentElement.className = 'js'</script>
     <!--[if lt IE 9]><script>/*@cc_on'abbr article aside audio canvas details figcaption figure footer header hgroup mark meter nav output progress section summary time video'.replace(/\w+/g,function(n){document.createElement(n)})@*/</script><![endif]-->
 </head>
 <body>
+    <h1>Hotspots of the Earth</h1>
+    <div id='mapCanvas'></div>
 
+    <script>
+      (function (window, document) {
+        if (!window.console && !console.log) { window.console = {log: function () {}} }
+        var DATA = {
+          hotspots: '50.2,6.7,Eifel|64.4,-17.3,Iceland|37.9,-26,Azores|71,-9,Jan Mayen|20,110,Hainan|37.755067,14.99525,Mount Etna|23.3,5.6,Hoggar|20.8,17.5,Tibesti|13,24.2,Darfur|7,39.5,Afar|2,5.1,Cameroon|32.6,-17.3,Madeira|28.2,-18,Canary|29.4,-29.2,New England|16,-24,Cape Verde|16.5,9.5,St. Helena|-40.3,10,Gough|-37.2,-12.3,Tristan|-32.1,-6.3,Vema|-43,-2.7,Discovery|-54.4,3.4,Bouvet|51.4,-1,Shona|-21.2,55.7,Réunion|-11.5,43.3,Comoros|-46.9,37.6,Marion|-46.1,50.2,Crozet|-49.6,69,Kerguelen|-53.1,73.5,Heard|-67.6,164.8,Balleny|-77.5,167.2,Erebus|-20.5,-28.8,Trindade|-3.8,-32.4,Fernando|-7.9,-14.3,Ascension|32.6,-64.3,Bermuda|44.5,-110.4,Yellowstone|36.8,-104.1,Raton|52.9,-123.733333,Nazko Cone|-34.7,159.8,Lord Howe|-40.4,155.5,Tasmanid|-40.8,146,East Australia|-33.9,-81.8,Juan Fernández|-26.4,-80.1,San Felix|-26.4,-106.5,Easter|-0.4,-91.6,Galápagos|-53.6,-140.6,Louisville|-37.7,-111.1,Foundation|-29,-140.3,Macdonald|-23.4,-150.7,Arago|-25.6,-143.3,North Austral|-20.2,-153.8,Maria/Southern Cook|-14.5,-168.2,Samoa|-26.9,-114.6,Crough|-25.4,-129.3,Pitcairn|-18.2,-148.4,Society|-10.5,-139,Marquesas|4.8,164.4,Caroline|19,-155.2,Hawaii|19,-111,Socorro|27.7,-114.5,Guadalupe|46,-130.1,Cobb|53,-134.8,Bowie'.split('|')
+        },
+        Mapper = (function () {
+          var _mapCanvas = document.getElementById('mapCanvas'), GM,
+              SCRIPT1 = document.getElementsByTagName('script')[0],
+              SCRIPT_HOLDER = SCRIPT1.parentNode,
+              pin = 'images/hotspot.png',
+              BODY = document.body;
+
+          return {
+            canvas: _mapCanvas,
+            map: null,
+            loadMap: function () {
+              var gms = document.createElement("script");
+              gms.src = "http://maps.google.com/maps/api/js?sensor=false&callback=M.setup";
+              SCRIPT_HOLDER.insertBefore(gms, SCRIPT1);
+              gms = null;
+              console.log('Loading Google Maps');
+            },
+            loadWebFont: function() {
+              window.WebFontConfig = {
+                google: { families: [ 'Droid Serif:regular,bold' ] }
+              };
+              var wf = document.createElement('script');
+              wf.src = 'http://ajax.googleapis.com/ajax/libs/webfont/1/webfont.js';
+              wf.async = 'true';
+              SCRIPT_HOLDER.insertBefore(wf, SCRIPT1);
+              wf = null;
+            },
+            initializeMap: function (self) {
+              GM = google.maps;
+
+                var options = {
+                      zoom: 2,
+                      mapTypeControl: false,
+                      center: new GM.LatLng(0, 0),
+                      mapTypeId: GM.MapTypeId.TERRAIN
+                    };
+                this.map = new GM.Map(_mapCanvas, options);
+
+                window.onresize = function () {
+                  GM.event.trigger(self.map, 'resize');
+                }
+            },
+            setMarker: function (data, self) {
+              return new GM.Marker({
+                position: new GM.LatLng(data[0], data[1]),
+                map: self.map,
+                icon: pin,
+                title: data[2] + ' Hotspot'
+              });
+            },
+            loadMarkers: function () {
+              var data_len = DATA.hotspots.length;
+
+              while (data_len--) {
+                this.setMarker(DATA.hotspots[data_len].split(','), this);
+              }
+              console.log('Markers Loaded');
+            },
+            setup: function () {
+              this.canvas.style.height = window.innerHeight + 'px';
+              this.canvas.style.width = window.innerWidth + 'px';
+
+              this.initializeMap(this);
+              console.log('Google Maps Loaded');
+
+              this.loadMarkers();
+              this.loadWebFont();
+            },
+            init: function () {
+              this.loadMap();
+              console.log('Mapper Initialized');
+            }
+          }
+        }());
+
+        window.onload = function () {
+          Mapper.init();
+        }
+
+        window.M = Mapper;
+      }(window, document));
+    </script>
 </body>
 </html>
