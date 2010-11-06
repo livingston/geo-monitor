@@ -23,7 +23,7 @@
     <!--[if lt IE 9]><script>/*@cc_on'abbr article aside audio canvas details figcaption figure footer header hgroup mark meter nav output progress section summary time video'.replace(/\w+/g,function(n){document.createElement(n)})@*/</script><![endif]-->
 </head>
 <body>
-    <h1>Hotspots of the Earth</h1>
+    <h1><span title="Hotspot is a portion of the Earth's surface that may be far from tectonic plate boundaries and that experiences volcanism due to a rising mantle plume or some other cause.">Hotspots</span> of the Earth</h1>
     <div id='mapCanvas'></div>
 
     <script>
@@ -59,7 +59,7 @@
               SCRIPT_HOLDER.insertBefore(wf, SCRIPT1);
               wf = null;
             },
-            initializeMap: function (self) {
+            initializeMap: function () {
               GM = google.maps;
 
                 var options = {
@@ -69,10 +69,6 @@
                       mapTypeId: GM.MapTypeId.TERRAIN
                     };
                 this.map = new GM.Map(_mapCanvas, options);
-
-                window.onresize = function () {
-                  GM.event.trigger(self.map, 'resize');
-                }
             },
             setMarker: function (data, self) {
               return new GM.Marker({
@@ -94,15 +90,20 @@
               this.canvas.style.height = window.innerHeight + 'px';
               this.canvas.style.width = window.innerWidth + 'px';
 
-              this.initializeMap(this);
+              this.initializeMap();
               console.log('Google Maps Loaded');
 
               this.loadMarkers();
-              this.loadWebFont();
             },
             init: function () {
-              this.loadMap();
+              var self = this;
+              self.loadMap();
               console.log('Mapper Initialized');
+
+              self.loadWebFont();
+              window.onresize = function () {
+                self.setup();
+              }
             }
           }
         }());
