@@ -1,6 +1,0 @@
-﻿/* RESET */
-html, body { height:100%; width:100%; overflow:hidden; margin:0; padding:0 }
-
-h1 { font-family: 'Droid Serif', arial, serif; font-size:24px; line-height:1em; position:absolute; bottom:30px; left:0; z-index:1000; padding:5px 10px; color:rgb(195,47,56); background:rgb(255,255,255) }
-
-h1 span { border-bottom:1px dashed; cursor:help }
