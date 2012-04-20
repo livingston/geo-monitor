@@ -39,7 +39,7 @@
 
     <script>
       (function (window, document) {
-        if (!window.console && !console.log) { window.console = {log: function () {}} }
+        window.console = {log: function () {}};
         var DATA = {
           hotspots: '50.2,6.7,Eifel|64.4,-17.3,Iceland|37.9,-26,Azores|71,-9,Jan Mayen|20,110,Hainan|37.755067,14.99525,Mount Etna|23.3,5.6,Hoggar|20.8,17.5,Tibesti|13,24.2,Darfur|7,39.5,Afar|2,5.1,Cameroon|32.6,-17.3,Madeira|28.2,-18,Canary|29.4,-29.2,New England|16,-24,Cape Verde|16.5,9.5,St. Helena|-40.3,10,Gough|-37.2,-12.3,Tristan|-32.1,-6.3,Vema|-43,-2.7,Discovery|-54.4,3.4,Bouvet|51.4,-1,Shona|-21.2,55.7,Réunion|-11.5,43.3,Comoros|-46.9,37.6,Marion|-46.1,50.2,Crozet|-49.6,69,Kerguelen|-53.1,73.5,Heard|-67.6,164.8,Balleny|-77.5,167.2,Erebus|-20.5,-28.8,Trindade|-3.8,-32.4,Fernando|-7.9,-14.3,Ascension|32.6,-64.3,Bermuda|44.5,-110.4,Yellowstone|36.8,-104.1,Raton|52.9,-123.733333,Nazko Cone|-34.7,159.8,Lord Howe|-40.4,155.5,Tasmanid|-40.8,146,East Australia|-33.9,-81.8,Juan Fernández|-26.4,-80.1,San Felix|-26.4,-106.5,Easter|-0.4,-91.6,Galápagos|-53.6,-140.6,Louisville|-37.7,-111.1,Foundation|-29,-140.3,Macdonald|-23.4,-150.7,Arago|-25.6,-143.3,North Austral|-20.2,-153.8,Maria/Southern Cook|-14.5,-168.2,Samoa|-26.9,-114.6,Crough|-25.4,-129.3,Pitcairn|-18.2,-148.4,Society|-10.5,-139,Marquesas|4.8,164.4,Caroline|19,-155.2,Hawaii|19,-111,Socorro|27.7,-114.5,Guadalupe|46,-130.1,Cobb|53,-134.8,Bowie'.split('|')
         },
@@ -90,10 +90,15 @@
               });
             },
             loadMarkers: function () {
-              var data_len = DATA.hotspots.length;
+              var data_len = DATA.hotspots.length, self = this;
 
               while (data_len--) {
-                this.setMarker(DATA.hotspots[data_len].split(','), this);
+                setTimeout((function(len) {
+                  return function () {
+                    var marker = self.setMarker(DATA.hotspots[len].split(','), self);
+                    marker.setAnimation(google.maps.Animation.DROP);
+                  }
+                }(data_len)), 50*data_len);
               }
               console.log('Markers Loaded');
             },
